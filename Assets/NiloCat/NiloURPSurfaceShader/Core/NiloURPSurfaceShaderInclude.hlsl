@@ -113,7 +113,7 @@ struct UserGeometryOutputData
 
 //Forward declaration of UserGeometryDataOutputFunction. 
 //This function must be implemented by user, inside user's .shader surface shader file, even if it is empty(do nothing)
-void UserGeometryDataOutputFunction(Attributes IN, inout UserGeometryOutputData outputData, bool isExtraCustomPass);
+void UserVertexOutputFunction(Attributes IN, inout UserGeometryOutputData outputData, bool isExtraCustomPass);
 
 UserGeometryOutputData BuildUserGeometryOutputData(Attributes IN, bool isExtraCustomPass = false)
 {
@@ -125,7 +125,7 @@ UserGeometryOutputData BuildUserGeometryOutputData(Attributes IN, bool isExtraCu
     outputData.tangentOS = IN.tangentOS;
 
     //then, let user optionally replace UserGeometryOutputData's values by user's own code
-    UserGeometryDataOutputFunction(IN, outputData, isExtraCustomPass);
+    UserVertexOutputFunction(IN, outputData, isExtraCustomPass);
 
     return outputData;
 }
@@ -241,7 +241,7 @@ struct LightingData
 };
 
 // Forward declaration of UserSurfaceOutputDataFunction. This function must be defined in user's .shader surface shader file
-void UserSurfaceOutputDataFunction(Varyings IN, inout UserSurfaceOutputData surfaceData, bool isExtraCustomPass);
+void UserSurfaceOutputFunction(Varyings IN, inout UserSurfaceOutputData surfaceOut, bool isExtraCustomPass);
 
 UserSurfaceOutputData BuildUserSurfaceOutputData(Varyings IN, bool isExtraCustomPass)
 {
@@ -258,7 +258,7 @@ UserSurfaceOutputData BuildUserSurfaceOutputData(Varyings IN, bool isExtraCustom
     surfaceData.alphaClipThreshold = 0;     //default 0, not 0.5, following PBR shader graph's default value
 
     //then let user optionally override some/al; UserSurfaceOutputData's values
-    UserSurfaceOutputDataFunction(IN, surfaceData, isExtraCustomPass);
+    UserSurfaceOutputFunction(IN, surfaceData, isExtraCustomPass);
 
     //safe guard user provided data (not sure if it is needed, because it cost performance here)
     surfaceData.albedo = max(0,surfaceData.albedo);
