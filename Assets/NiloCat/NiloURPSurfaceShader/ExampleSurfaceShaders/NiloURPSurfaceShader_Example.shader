@@ -11,12 +11,12 @@
 //- must be "very easy to use & flexible", even if performance cost is higher
 //- (future update)this file must be a template file that can be created using unity's editor GUI (right click in project window, Create/Shader/URPSurfaceShader)
 
-//*** Inside this file, user should only care sections with [User editable section] tag, other code can be ignored by user in most cases ***
+//==== Inside this file, user should only care sections with [User editable section] tag, other code can be ignored by user in most cases ====
 
 //__________________________________________[User editable section]__________________________________________\\
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //change this line to any unique path you like, so you can pick this shader in material's shader dropdown menu
-Shader "Universal Render Pipeline/SurfaceShaders/ExampleSurfaceShader"
+Shader "Universal Render Pipeline/URPSurfaceShader"
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 {
     Properties
@@ -108,12 +108,10 @@ Shader "Universal Render Pipeline/SurfaceShaders/ExampleSurfaceShader"
     #pragma multi_compile _ _SHADOWS_SOFT
     #pragma multi_compile _ _MIXED_LIGHTING_SUBTRACTIVE
     //==================================================================================================================
-
-
+    
     //the core .hlsl of the whole URP surface shader structure, must be included
     #include "../Core/NiloURPSurfaceShaderInclude.hlsl"
-
-
+    
     //__________________________________________[User editable section]__________________________________________\\
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -165,13 +163,13 @@ Shader "Universal Render Pipeline/SurfaceShaders/ExampleSurfaceShader"
         float4 tangentOS;
     };
     */
-    void UserGeometryDataOutputFunction(Attributes IN, inout UserGeometryOutputData geometryOutputData, bool isExtraCustomPass)
+    void UserVertexOutputFunction(Attributes IN, inout UserGeometryOutputData vertexOut, bool isExtraCustomPass)
     {
-        geometryOutputData.positionOS += sin(_Time.y * dot(float3(1,1,1),geometryOutputData.positionOS) * 10) * _NoiseStrength * 0.0125; //random sin() vertex anim
+        vertexOut.positionOS += sin(_Time.y * dot(float3(1,1,1),vertexOut.positionOS) * 10) * _NoiseStrength * 0.0125; //random sin() vertex anim
 
         if(isExtraCustomPass)
         {
-            geometryOutputData.positionOS += geometryOutputData.normalOS *_OutlineWidthOS * 0.025; //outline pass needs to enlarge mesh
+            vertexOut.positionOS += vertexOut.normalOS *_OutlineWidthOS * 0.025; //outline pass needs to enlarge mesh
         }
 
         //No need to write all other geometryOutputData.XXX if you don't want to edit them.
@@ -197,35 +195,35 @@ Shader "Universal Render Pipeline/SurfaceShaders/ExampleSurfaceShader"
         half    alphaClipThreshold;
     };
     */
-    void UserSurfaceOutputDataFunction(Varyings IN, inout UserSurfaceOutputData surfaceData, bool isExtraCustomPass)
+    void UserSurfaceOutputFunction(Varyings IN, inout UserSurfaceOutputData surfaceOut, bool isExtraCustomPass)
     {
         float2 uv = TRANSFORM_TEX(IN.uv, _BaseMap);
         
         half4 color = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, uv) * _BaseColor;
-        surfaceData.albedo = color.rgb;
-        surfaceData.alpha = color.a;
-        surfaceData.alphaClipThreshold = _Cutoff;
+        surfaceOut.albedo = color.rgb;
+        surfaceOut.alpha = color.a;
+        surfaceOut.alphaClipThreshold = _Cutoff;
 
 #if _NORMALMAP
-        surfaceData.normalTS = UnpackNormalScale(SAMPLE_TEXTURE2D(_BumpMap, sampler_BumpMap, uv), _BumpScale);
+        surfaceOut.normalTS = UnpackNormalScale(SAMPLE_TEXTURE2D(_BumpMap, sampler_BumpMap, uv), _BumpScale);
 #endif
 
         half4 MetallicR_OcclusionG_SmoothnessA = SAMPLE_TEXTURE2D(_MetallicR_OcclusionG_SmoothnessA_Tex, sampler_MetallicR_OcclusionG_SmoothnessA_Tex, uv);
-        surfaceData.occlusion = MetallicR_OcclusionG_SmoothnessA.g; //ao in g
-        surfaceData.metallic = _Metallic * MetallicR_OcclusionG_SmoothnessA.r; //metallic in r
-        surfaceData.smoothness = _Smoothness * MetallicR_OcclusionG_SmoothnessA.a; //smoothness in a
+        surfaceOut.occlusion = MetallicR_OcclusionG_SmoothnessA.g; //ao in g
+        surfaceOut.metallic = _Metallic * MetallicR_OcclusionG_SmoothnessA.r; //metallic in r
+        surfaceOut.smoothness = _Smoothness * MetallicR_OcclusionG_SmoothnessA.a; //smoothness in a
 
-        surfaceData.emission = _EmissionColor.rgb * _EmissionColor.aaa * SAMPLE_TEXTURE2D(_EmissionMap, sampler_EmissionMap, uv).rgb;
+        surfaceOut.emission = _EmissionColor.rgb * _EmissionColor.aaa * SAMPLE_TEXTURE2D(_EmissionMap, sampler_EmissionMap, uv).rgb;
 
         //isExtraCustomPass is a compile time constant, so writing if() here has 0 performance cost.
         //In this example shader, isExtraCustomPass is true only when executing the custom pass (outline pass)
         if(isExtraCustomPass)
         {
             //make outline pass darker
-            surfaceData.albedo = 0;
-            surfaceData.smoothness = 0;
-            surfaceData.metallic = 0;
-            surfaceData.occlusion = 0;
+            surfaceOut.albedo = 0;
+            surfaceOut.smoothness = 0;
+            surfaceOut.metallic = 0;
+            surfaceOut.occlusion = 0;
         }
     }
 
