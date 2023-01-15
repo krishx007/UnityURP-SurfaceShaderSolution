@@ -28,21 +28,18 @@ Shader "Universal Render Pipeline/URPSurfaceShader"
         //make sure to match all uniforms inside CBUFFER_START(UnityPerMaterial) in the next [User editable section]
         
         //below are just some example use case Properties, you can write whatever you want here
-        [Header(BaseColor)]
+        //[Header(BaseColor)]
         [MainColor] _BaseColor("Color", Color) = (1,1,1,1)
         [MainTexture] _BaseMap("Albedo", 2D) = "white" {}
 
-        [Header(Alpha)]
+        //[Header(Alpha)]
         _Cutoff("Alpha Cutoff", Range(0.0, 1.0)) = 0.5
-
-        //Metallic workflow
-        [Header(Metallic)]
+        
         [Gamma] _Metallic("Metallic", Range(0.0, 1.0)) = 0.0
-
-        [Header(Smoothness)]
+        
         _Smoothness("Smoothness", Range(0.0, 1.0)) = 0.5
 
-        [Header(NormalMap)]
+  
         [Toggle(_NORMALMAP)]_NORMALMAP("_NORMALMAP?", Float) = 1
         _BumpMap("Normal Map", 2D) = "bump" {}
         _BumpScale("Scale", Float) = 1.0
@@ -50,8 +47,8 @@ Shader "Universal Render Pipeline/URPSurfaceShader"
         [Header(SharedDataTexture)]
         _MetallicR_OcclusionG_SmoothnessA_Tex("_MetallicR_OcclusionG_SmoothnessA_Tex", 2D) = "white" {}
 
-        [Header(Emission)]
-        [HDR]_EmissionColor("Color", Color) = (0,0,0)
+        //[Header(Emission)]
+        [HDR]_EmissionColor("Emission Color", Color) = (0,0,0)
         _EmissionMap("Emission", 2D) = "white" {}
 
         //==================================================
