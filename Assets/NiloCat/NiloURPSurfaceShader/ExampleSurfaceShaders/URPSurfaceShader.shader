@@ -160,7 +160,7 @@ Shader "Universal Render Pipeline/URPSurfaceShader"
         float4 tangentOS;
     };
     */
-    void UserVertexOutputFunction(Attributes IN, inout UserGeometryOutputData vertexOut, bool isExtraCustomPass)
+    void VertexFunction(Attributes IN, inout VertexInfo vertexOut, bool isExtraCustomPass)
     {
         vertexOut.positionOS += sin(_Time.y * dot(float3(1,1,1),vertexOut.positionOS) * 10) * _NoiseStrength * 0.0125; //random sin() vertex anim
 
@@ -192,7 +192,7 @@ Shader "Universal Render Pipeline/URPSurfaceShader"
         half    alphaClipThreshold;
     };
     */
-    void UserSurfaceOutputFunction(Varyings IN, inout UserSurfaceOutputData surfaceOut, bool isExtraCustomPass)
+    void SurfaceFunction(Varyings IN, inout SurfaceInfo surfaceOut, bool isExtraCustomPass)
     {
         float2 uv = TRANSFORM_TEX(IN.uv, _BaseMap);
         
@@ -227,7 +227,7 @@ Shader "Universal Render Pipeline/URPSurfaceShader"
     //IMPORTANT: write your final fragment color edit logic here
     //usually for gameplay logic's color override or darken, like "loop: lerp to red" for selectable targets / flash white on taking damage / darken dead units...
     //you can replace this function by a #include "Your_own_hlsl.hlsl" call, to share this function between different surface shaders
-    void FinalPostProcessFrag(Varyings IN, UserSurfaceOutputData surfaceData, LightingData lightingData, inout half4 inputColor)
+    void FinalPostProcessFrag(Varyings IN, SurfaceInfo surfaceData, LightingData lightingData, inout half4 inputColor)
     {
 #if _IsSelected
         inputColor.rgb = lerp(inputColor.rgb,_SelectedLerpColor.rgb, _SelectedLerpColor.a * (sin(_Time.y * 5) * 0.5 + 0.5));

@@ -62,7 +62,7 @@ half3 LightingPhysicallyBasedCelShade(BRDFData brdfData, Light light, half3 norm
     return LightingPhysicallyBasedCelShade(brdfData, light.color, light.direction, light.distanceAttenuation * light.shadowAttenuation, normalWS, viewDirectionWS);
 }
 
-half4 CalculateSurfaceFinalResultColor(Varyings IN, UserSurfaceOutputData surfaceData, LightingData lightingData)
+half4 CalculateSurfaceFinalResultColor(Varyings IN, SurfaceInfo surfaceData, LightingData lightingData)
 {
     // BRDFData holds energy conserving diffuse and specular material reflections and its roughness.
     // It's easy to plugin your own shading fuction. You just need replace LightingPhysicallyBased function
